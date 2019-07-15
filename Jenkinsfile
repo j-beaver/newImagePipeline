@@ -6,11 +6,12 @@ pipeline {
             steps {
                 sh 'echo "Hello World"'
                 sh 'touch /tmp/test.msg'
-                sh '''
-                    echo "Multiline shell steps works too"
-                    ls -lah
-                '''
             }
+        stage('test') {
+            steps {
+                sh 'echo "Hello Test World"'
+                sh 'touch /tmp/test.msg'
+            }            
         }
     }
 }
