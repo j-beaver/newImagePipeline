@@ -1,14 +1,22 @@
 pipeline {
   environment {
-    imagename = "test_image"
-    registry = 'http://localhost:8083'
+    imagesuffix = "-custom"
+    registry = 'localhost:8083'
+    registryurl = 'http://localhost:8083'
+    dockerfile = "Dockerfile"
   }
     agent any
     stages {
         stage('Build') {
             steps {
+                sh 'echo UPDATE DOCKER FILE WITH THE PIPELINE INPUTS'
                 script {
-                    dockerImage = docker.build(imagename)
+                    def text = readFile dockerfile
+                    text = text.replaceAll("registry", env.registry).replaceAll("image", env.image).replaceAll("tag", env.tag)
+                    writeFile file: "Dockerfile", text: text
+
+                    def imageCustomName = env.image + env.imagesuffix + ":" + env.tag
+                    dockerImage = docker.build(imageCustomName)
                 }
                 sh 'echo BUILD SUCCESSFULL '
                 
@@ -26,8 +34,9 @@ pipeline {
         stage('Push') {
             steps {
                 script {
-                    docker.withRegistry(registry, 'dockerUserCreds'){
+                    docker.withRegistry(registryurl, 'dockerUserCreds'){
                         dockerImage.push()
+                        dockerImage.push("latest")
                     }
                 }
             }
