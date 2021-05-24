@@ -8,7 +8,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    dockerImage = docker.build("test-image", "/tmp/docker")
+                    dockerImage = docker.build("test-image")
                 }
                 sh 'echo BUILD SUCCESSFULL '
                 
