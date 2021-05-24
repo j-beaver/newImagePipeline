@@ -1,2 +1,2 @@
-FROM localhost:8083/busybox:latest
+FROM registry/image:tag
 RUN echo "hello world"
