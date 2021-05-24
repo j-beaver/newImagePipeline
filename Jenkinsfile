@@ -1,11 +1,36 @@
 pipeline {
+  environment {
+    imagename = "test_image"
+    registry = 'http://localhost:8083'
+  }
     agent any
     stages {
-        stage('test') {
+        stage('Build') {
             steps {
-                sh 'echo "Hello Test World"'
-                sh 'touch /tmp/test.msg'
-            }            
+                script {
+                    dockerImage = docker.build("test-image", "/tmp/docker")
+                }
+                sh 'echo BUILD SUCCESSFULL '
+                
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    dockerImage.inside(){
+                        sh 'echo TEST WITHIN'
+                    }
+                }
+            }
+        }
+        stage('Push') {
+            steps {
+                script {
+                    docker.withRegistry(registry, 'dockerUserCreds'){
+                        dockerImage.push()
+                    }
+                }
+            }
         }
     }
 }
